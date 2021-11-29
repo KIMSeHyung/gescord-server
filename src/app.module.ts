@@ -36,12 +36,7 @@ import { HttpExceptionFilter } from './common/http-exception.filter';
     GraphQLModule.forRoot({
       autoSchemaFile: true,
       context: ({ req, conn }) => {
-        if (req) {
-          const token = req.headers.authorization;
-          return { ...req, token };
-        } else {
-          return conn;
-        }
+        return req ? req : conn;
       },
     }),
     UserModule,

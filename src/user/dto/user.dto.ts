@@ -32,12 +32,6 @@ export class SignUpResponse extends BaseResponse {
 export class LoginDto extends PickType(User, ['email', 'password'], ArgsType) {}
 
 @ObjectType()
-export class LoginResonse extends BaseResponse {
-  @Field(() => String, { nullable: true })
-  token?: string;
-}
-
-@ObjectType()
 export class CurrentUserResponse extends BaseResponse {
   @Field(() => AuthUser, { nullable: true })
   user?: AuthUser;
