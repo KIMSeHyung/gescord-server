@@ -1,16 +1,10 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import {
-  BeforeInsert,
-  BeforeUpdate,
-  Column,
-  Entity,
-  JoinTable,
-  ManyToMany,
-} from 'typeorm';
+import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany } from 'typeorm';
 
 import { hash, compare } from 'bcrypt';
 import { BaseComlum } from 'src/common/entity/base.entity';
 import { IsEmail, MaxLength, MinLength } from 'class-validator';
+import { FriendRequest } from './friend-request.entity';
 
 @ObjectType()
 @Entity()
@@ -34,10 +28,13 @@ export class User extends BaseComlum {
   @Column({ default: false })
   isActive?: boolean;
 
-  @Field(() => [User], { nullable: true })
-  @ManyToMany(() => User)
-  @JoinTable()
-  friends: User[];
+  @Field(() => [FriendRequest])
+  @OneToMany(() => FriendRequest, (f) => f.creator)
+  sentFriendRequest: FriendRequest[];
+
+  @Field(() => [FriendRequest])
+  @OneToMany(() => FriendRequest, (f) => f.receiver)
+  recivedFriendRequest: FriendRequest[];
 
   private hashPassword(password: string): Promise<string> {
     return hash(password, 10);
