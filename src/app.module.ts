@@ -7,6 +7,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { AuthModule } from './auth/auth.module';
 import { APP_FILTER } from '@nestjs/core';
 import { HttpExceptionFilter } from './common/http-exception.filter';
+import { ChannelModule } from './channel/channel.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { HttpExceptionFilter } from './common/http-exception.filter';
     }),
     UserModule,
     AuthModule,
+    ChannelModule,
   ],
   controllers: [],
   providers: [

@@ -6,6 +6,7 @@ import { BaseResponse } from 'src/common/dto/base.dto';
 import {
   AuthUser,
   CurrentUserResponse,
+  FindUserResponse,
   GetFriendRequestResponse,
   GetFriendsResponse,
   LoginDto,
@@ -13,6 +14,7 @@ import {
   SignUpResponse,
 } from './dto/user.dto';
 import { FriendRequestStatus } from './entity/friend-request.entity';
+import { ActiveStatus } from './entity/user.entity';
 import { UserService } from './user.service';
 
 @Resolver()
@@ -68,6 +70,13 @@ export class UserResolver {
     return { ok: true };
   }
 
+  @Query(() => BaseResponse)
+  async logout(@Context() context: any, @authUser() user: AuthUser) {
+    await this.userService.updateUserActiveStatus(user.id, ActiveStatus.OFF);
+    context.res.clearCookie('Authorization');
+    return { ok: true };
+  }
+
   @Query(() => CurrentUserResponse)
   async currentUser(@authUser() user: AuthUser): Promise<CurrentUserResponse> {
     return { ok: true, user };
@@ -118,5 +127,16 @@ export class UserResolver {
     } catch (e) {
       return { ok: false, message: '친구목록 가져오기에 실패했습니다.' };
     }
+  }
+
+  @Query(() => FindUserResponse)
+  async findUserByNameWithTag(
+    @authUser() user: AuthUser,
+    @Args('nameWithTag') nameWithTag: string,
+  ): Promise<FindUserResponse> {
+    const foundedUser = await this.userService.findUserByNameWithTag(
+      nameWithTag,
+    );
+    return { ok: true, user: foundedUser };
   }
 }

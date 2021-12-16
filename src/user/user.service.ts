@@ -1,12 +1,13 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { generateRandomTag } from 'src/common/utils/generate-tag';
 import { Repository } from 'typeorm';
 import { AuthUser, SignUpDto } from './dto/user.dto';
 import {
   FriendRequest,
   FriendRequestStatus,
 } from './entity/friend-request.entity';
-import { User } from './entity/user.entity';
+import { ActiveStatus, User } from './entity/user.entity';
 
 @Injectable()
 export class UserService {
@@ -26,10 +27,21 @@ export class UserService {
     if (exists) {
       throw new BadRequestException('이미 존재하는 이메일입니다.');
     }
+
+    let tag: string;
+    while (true) {
+      tag = generateRandomTag();
+      const checkDupTag = await this.users.findOne({ name: data.name, tag });
+      if (!checkDupTag) {
+        break;
+      }
+    }
+
     const user = this.users.create();
     user.email = data.email;
     user.password = data.password;
     user.name = data.name;
+    user.tag = tag;
     await this.users.save(user);
     return user;
   }
@@ -119,5 +131,25 @@ export class UserService {
     });
 
     return friends;
+  }
+
+  async findUserByNameWithTag(nameWithTag: string): Promise<AuthUser> {
+    const data = nameWithTag.split('#');
+    if (data.length < 2 || data[1].length < 4) {
+      throw new BadRequestException('사용자명과 태그를 정확히 입력해주세요.');
+    }
+    const name = data[0];
+    const tag = data[1];
+
+    const user: AuthUser = await this.users.findOne({ name, tag });
+    if (!user) {
+      throw new BadRequestException('일치하는 사용자가 없습니다.');
+    }
+
+    return user;
+  }
+
+  async updateUserActiveStatus(userId: number, status: ActiveStatus) {
+    await this.users.update({ id: userId }, { isActive: status });
   }
 }

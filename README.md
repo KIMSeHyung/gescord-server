@@ -1,5 +1,6 @@
 # gescord
-디스코드 클론 프로젝트.
+
+디스코드 클론 프로젝트 (BE)
 NestJs, Graphql, Mysql, Redis(PubSub)
 
 ## 회원가입
@@ -15,9 +16,9 @@ NestJs, Graphql, Mysql, Redis(PubSub)
 
 ## 유저
 
-- 닉네임 식별번호 추가
-- 유저 검색
-- 프로필 업로드
+- 닉네임 식별번호 추가[0]
+- 유저 검색[0]
+- 프로필사진 업로드
 - 정보 변경
 - 친구추가 로직 구현[o]
 - 친구 추가 알림 구현
@@ -38,7 +39,6 @@ NestJs, Graphql, Mysql, Redis(PubSub)
 
 - 참여인원 표시
 - 종료
-
 
 ## 미디어 서버
 

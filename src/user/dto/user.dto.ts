@@ -49,3 +49,9 @@ export class GetFriendsResponse extends BaseResponse {
   @Field(() => [AuthUser], { nullable: true })
   friends?: AuthUser[];
 }
+
+@ObjectType()
+export class FindUserResponse extends BaseResponse {
+  @Field(() => AuthUser, { nullable: true })
+  user?: AuthUser;
+}
