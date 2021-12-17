@@ -3,9 +3,10 @@ import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany } from 'typeorm';
 
 import { hash, compare } from 'bcrypt';
 import { BaseComlum } from 'src/common/entity/base.entity';
-import { IsEmail, MaxLength, MinLength } from 'class-validator';
+import { IsEmail } from 'class-validator';
 import { FriendRequest } from './friend-request.entity';
 import { Channel } from 'src/channel/entity/channel.entity';
+import { Exclude } from 'class-transformer';
 
 export enum ActiveStatus {
   ON = 'on',
@@ -25,10 +26,7 @@ export class User extends BaseComlum {
   @IsEmail({}, { message: '이메일 형식이 아닙니다.' })
   email: string;
 
-  @Field(() => String)
-  @Column({ length: 250 })
-  @MinLength(8, { message: '비밀번호는 최소 8자 이상입니다.' })
-  @MaxLength(20, { message: '비밀번호는 최대 20자 이하입니다.' })
+  @Column({ select: false, length: 250 })
   password: string;
 
   @Field(() => String)
@@ -55,10 +53,12 @@ export class User extends BaseComlum {
   @OneToMany(() => Channel, (channel) => channel.master)
   channel: Channel[];
 
+  @Exclude()
   private hashPassword(password: string): Promise<string> {
     return hash(password, 10);
   }
 
+  @Exclude()
   public comparePassword(password: string): Promise<boolean> {
     return compare(password, this.password);
   }

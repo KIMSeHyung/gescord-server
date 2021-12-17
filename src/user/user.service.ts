@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { generateRandomTag } from 'src/common/utils/generate-tag';
 import { Repository } from 'typeorm';
-import { AuthUser, SignUpDto } from './dto/user.dto';
+import { SignUpDto } from './dto/user.dto';
 import {
   FriendRequest,
   FriendRequestStatus,
@@ -17,8 +17,17 @@ export class UserService {
     private readonly friendRequest: Repository<FriendRequest>,
   ) {}
 
+  async findById(userId: number): Promise<User> {
+    const user = await this.users.findOne({ id: userId });
+    return user;
+  }
+
   async findByEmail(email: string): Promise<User> {
-    const user = await this.users.findOne({ email });
+    const user = await this.users
+      .createQueryBuilder()
+      .addSelect('password AS User_password')
+      .where({ email })
+      .getOne();
     return user;
   }
 
@@ -60,11 +69,10 @@ export class UserService {
     return false;
   }
 
-  async sendFriendRequest(creatorId: number, receiverId: number) {
-    if (creatorId === receiverId) {
+  async sendFriendRequest(creator: User, receiverId: number) {
+    if (creator.id === receiverId) {
       throw new BadRequestException('자기 자신에게는 요청 할 수 없습니다.');
     }
-    const creator = await this.users.findOne({ id: creatorId });
     const receiver = await this.users.findOne({ id: receiverId });
 
     if (!receiver) {
@@ -94,7 +102,7 @@ export class UserService {
   }
 
   async getFriendRequestsFromRecipients(
-    currentUser: number,
+    currentUser: User,
   ): Promise<FriendRequest[]> {
     return await this.friendRequest.find({
       where: [{ receiver: currentUser, status: FriendRequestStatus.PENDING }],
@@ -102,30 +110,29 @@ export class UserService {
     });
   }
 
-  async getFriendRequestsStatus(currentUser: number): Promise<FriendRequest[]> {
+  async getFriendRequestsStatus(currentUser: User): Promise<FriendRequest[]> {
     return await this.friendRequest.find({
       where: [{ creator: currentUser }],
       relations: ['creator', 'receiver'],
     });
   }
 
-  async getFriends(userId: number): Promise<AuthUser[]> {
-    const currentUser = await this.users.findOne({ id: userId });
+  async getFriends(user: User): Promise<User[]> {
     const friendRequests = await this.friendRequest.find({
       where: [
-        { creator: currentUser, status: FriendRequestStatus.ACCEPTED },
-        { receiver: currentUser, status: FriendRequestStatus.ACCEPTED },
+        { creator: user, status: FriendRequestStatus.ACCEPTED },
+        { receiver: user, status: FriendRequestStatus.ACCEPTED },
       ],
       relations: ['creator', 'receiver'],
     });
 
-    const friends: AuthUser[] = [];
+    const friends: User[] = [];
     friendRequests.forEach((req: FriendRequest) => {
-      if (currentUser.id === req.creator.id) {
-        const friend: AuthUser = req.receiver;
+      if (user.id === req.creator.id) {
+        const friend: User = req.receiver;
         friends.push(friend);
-      } else if (currentUser.id === req.receiver.id) {
-        const friend: AuthUser = req.creator;
+      } else if (user.id === req.receiver.id) {
+        const friend: User = req.creator;
         friends.push(friend);
       }
     });
@@ -133,7 +140,7 @@ export class UserService {
     return friends;
   }
 
-  async findUserByNameWithTag(nameWithTag: string): Promise<AuthUser> {
+  async findUserByNameWithTag(nameWithTag: string): Promise<User> {
     const data = nameWithTag.split('#');
     if (data.length < 2 || data[1].length < 4) {
       throw new BadRequestException('사용자명과 태그를 정확히 입력해주세요.');
@@ -141,7 +148,7 @@ export class UserService {
     const name = data[0];
     const tag = data[1];
 
-    const user: AuthUser = await this.users.findOne({ name, tag });
+    const user = await this.users.findOne({ name, tag });
     if (!user) {
       throw new BadRequestException('일치하는 사용자가 없습니다.');
     }

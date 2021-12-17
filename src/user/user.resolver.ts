@@ -4,7 +4,6 @@ import { authUser, Public } from 'src/auth/auth.decorator';
 import { AuthService } from 'src/auth/auth.service';
 import { BaseResponse } from 'src/common/dto/base.dto';
 import {
-  AuthUser,
   CurrentUserResponse,
   FindUserResponse,
   GetFriendRequestResponse,
@@ -14,7 +13,7 @@ import {
   SignUpResponse,
 } from './dto/user.dto';
 import { FriendRequestStatus } from './entity/friend-request.entity';
-import { ActiveStatus } from './entity/user.entity';
+import { ActiveStatus, User } from './entity/user.entity';
 import { UserService } from './user.service';
 
 @Resolver()
@@ -36,12 +35,8 @@ export class UserResolver {
     if (!signUpData.name) {
       throw new BadRequestException('이름이 필요합니다.');
     }
-    try {
-      const user = await this.userService.signUp(signUpData);
-      return { ok: true, user };
-    } catch (e) {
-      return { ok: false, message: '회원가입 에러' };
-    }
+    const user = await this.userService.signUp(signUpData);
+    return { ok: true, user };
   }
 
   @Public()
@@ -71,41 +66,41 @@ export class UserResolver {
   }
 
   @Query(() => BaseResponse)
-  async logout(@Context() context: any, @authUser() user: AuthUser) {
+  async logout(@Context() context: any, @authUser() user: User) {
     await this.userService.updateUserActiveStatus(user.id, ActiveStatus.OFF);
     context.res.clearCookie('Authorization');
     return { ok: true };
   }
 
   @Query(() => CurrentUserResponse)
-  async currentUser(@authUser() user: AuthUser): Promise<CurrentUserResponse> {
+  async currentUser(@authUser() user: User): Promise<CurrentUserResponse> {
     return { ok: true, user };
   }
 
   @Query(() => GetFriendRequestResponse)
   async getFriendRequestsFromRecipients(
-    @authUser() user: AuthUser,
+    @authUser() user: User,
   ): Promise<GetFriendRequestResponse> {
     const requests = await this.userService.getFriendRequestsFromRecipients(
-      user.id,
+      user,
     );
     return { ok: true, friendRequest: requests };
   }
 
   @Query(() => GetFriendRequestResponse)
   async getFriendRequestsStatus(
-    @authUser() user: AuthUser,
+    @authUser() user: User,
   ): Promise<GetFriendRequestResponse> {
-    const requests = await this.userService.getFriendRequestsStatus(user.id);
+    const requests = await this.userService.getFriendRequestsStatus(user);
     return { ok: true, friendRequest: requests };
   }
 
   @Mutation(() => BaseResponse)
   async sendFriendRequest(
-    @authUser() user: AuthUser,
+    @authUser() user: User,
     @Args('recieverId') recieverId: number,
   ): Promise<BaseResponse> {
-    await this.userService.sendFriendRequest(user.id, recieverId);
+    await this.userService.sendFriendRequest(user, recieverId);
     return { ok: true };
   }
 
@@ -120,9 +115,9 @@ export class UserResolver {
   }
 
   @Query(() => GetFriendsResponse)
-  async getFriends(@authUser() user: AuthUser): Promise<GetFriendsResponse> {
+  async getFriends(@authUser() user: User): Promise<GetFriendsResponse> {
     try {
-      const friends = await this.userService.getFriends(user.id);
+      const friends = await this.userService.getFriends(user);
       return { ok: true, friends };
     } catch (e) {
       return { ok: false, message: '친구목록 가져오기에 실패했습니다.' };
@@ -131,7 +126,7 @@ export class UserResolver {
 
   @Query(() => FindUserResponse)
   async findUserByNameWithTag(
-    @authUser() user: AuthUser,
+    @authUser() user: User,
     @Args('nameWithTag') nameWithTag: string,
   ): Promise<FindUserResponse> {
     const foundedUser = await this.userService.findUserByNameWithTag(

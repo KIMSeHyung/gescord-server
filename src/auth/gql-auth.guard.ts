@@ -26,7 +26,6 @@ export class GqlAuthGuard extends AuthGuard('jwt') {
     if (isPublic) {
       return true;
     }
-
     return super.canActivate(new ExecutionContextHost([req]));
   }
 
