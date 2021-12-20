@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Request } from 'express';
 import { Strategy } from 'passport-jwt';
-import { AuthUser } from 'src/user/dto/user.dto';
+import { User } from 'src/user/entity/user.entity';
 import { UserService } from 'src/user/user.service';
 import { JWT_SECRET } from './auth.constants';
 
@@ -30,12 +30,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: any): Promise<AuthUser> {
-    const user = await this.userService.findByEmail(payload.email);
+  async validate(payload: any): Promise<User> {
+    const user = await this.userService.findById(payload.id);
     if (!user) {
       throw new UnauthorizedException('인증되지 않았습니다.');
     }
-    const { password, ...result } = user;
-    return result;
+    return user;
   }
 }

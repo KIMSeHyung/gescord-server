@@ -5,6 +5,7 @@ import { UserModule } from './user/user.module';
 import * as Joi from 'joi';
 import { GraphQLModule } from '@nestjs/graphql';
 import { AuthModule } from './auth/auth.module';
+import { ChannelModule } from './channel/channel.module';
 import { APP_FILTER } from '@nestjs/core';
 import { HttpExceptionFilter } from './common/http-exception.filter';
 
@@ -41,6 +42,7 @@ import { HttpExceptionFilter } from './common/http-exception.filter';
     }),
     UserModule,
     AuthModule,
+    ChannelModule,
   ],
   controllers: [],
   providers: [
