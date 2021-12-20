@@ -4,10 +4,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
 import * as Joi from 'joi';
 import { GraphQLModule } from '@nestjs/graphql';
+import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './auth/auth.module';
 import { ChannelModule } from './channel/channel.module';
 import { APP_FILTER } from '@nestjs/core';
 import { HttpExceptionFilter } from './common/http-exception.filter';
+import { ChatModule } from './chat/chat.module';
+import { VoiceModule } from './voice/voice.module';
 
 @Module({
   imports: [
@@ -34,6 +37,7 @@ import { HttpExceptionFilter } from './common/http-exception.filter';
       synchronize: true,
       entities: ['dist/**/*.entity{.ts,.js}'],
     }),
+    MongooseModule.forRoot('mongodb://localhost:27017/gescord'),
     GraphQLModule.forRoot({
       autoSchemaFile: true,
       context: ({ req, conn }) => {
@@ -43,6 +47,8 @@ import { HttpExceptionFilter } from './common/http-exception.filter';
     UserModule,
     AuthModule,
     ChannelModule,
+    ChatModule,
+    VoiceModule,
   ],
   controllers: [],
   providers: [
