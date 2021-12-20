@@ -1,8 +1,10 @@
 import { BadGatewayException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { number } from 'joi';
 import { User } from 'src/user/entity/user.entity';
 import { Repository } from 'typeorm';
 import { Channel } from './entity/channel.entity';
+import { InviteChannel } from './entity/invite-channel.entity';
 import { InviteCode } from './entity/invite-code.entity';
 
 @Injectable()
@@ -12,6 +14,8 @@ export class ChannelService {
     @InjectRepository(User) private readonly users: Repository<User>,
     @InjectRepository(InviteCode)
     private readonly inviteCodes: Repository<InviteCode>,
+    @InjectRepository(InviteChannel)
+    private readonly inviteChannels: Repository<InviteChannel>,
   ) {}
 
   async createChannel(user: User, name: string) {
@@ -59,18 +63,36 @@ export class ChannelService {
     return code.code;
   }
 
-  async joinChannelByCode(user: User, code: string) {
+  async joinChannelByCode(user: User, code: string): Promise<Channel> {
     const invite = await this.inviteCodes.findOne({
       select: ['channelId'],
       where: { code },
     });
-
-    console.log(invite);
-
     const channel = await this.channels.findOne(
       { id: invite.channelId },
-      { relations: ['participants'] },
+      { relations: ['participants', 'master'] },
     );
-    console.log(channel);
+
+    let isAlreadyJoin = false;
+    channel.participants.forEach((x) => {
+      if (x.id == user.id) {
+        isAlreadyJoin = true;
+      }
+    });
+
+    if (!isAlreadyJoin) {
+      channel.participants.push(user);
+      await this.channels.save(channel);
+    }
+
+    return channel;
+  }
+
+  async inviteChannelToFriend(channelId: number, user: User, toUserId: number) {
+    const invite = this.inviteChannels.create();
+    invite.channelId = channelId;
+    invite.fromUser = user;
+    invite.toUserId = toUserId;
+    await this.inviteChannels.save(invite);
   }
 }

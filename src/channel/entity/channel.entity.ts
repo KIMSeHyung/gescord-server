@@ -2,7 +2,15 @@ import { Field, ObjectType } from '@nestjs/graphql';
 import { MaxLength, MinLength } from 'class-validator';
 import { BaseComlum } from 'src/common/entity/base.entity';
 import { User } from 'src/user/entity/user.entity';
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
+import { InviteChannel } from './invite-channel.entity';
 
 @ObjectType()
 @Entity()
@@ -13,7 +21,7 @@ export class Channel extends BaseComlum {
   @MaxLength(30, { message: '채널명은 최대 30자 이하 입니다.' })
   name: string;
 
-  @Field(() => [User])
+  @Field(() => User)
   @ManyToOne(() => User, (user) => user.channel)
   master: User;
 
@@ -21,4 +29,8 @@ export class Channel extends BaseComlum {
   @ManyToMany(() => User)
   @JoinTable()
   participants: User[];
+
+  @Field(() => [InviteChannel])
+  @OneToMany(() => InviteChannel, (invite) => invite.channel)
+  inviteChannel: InviteChannel[];
 }
