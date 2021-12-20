@@ -30,7 +30,7 @@ import { HttpExceptionFilter } from './common/http-exception.filter';
       username: process.env.DB_USER_NAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      logging: false,
+      logging: ['query'],
       synchronize: true,
       entities: ['dist/**/*.entity{.ts,.js}'],
     }),

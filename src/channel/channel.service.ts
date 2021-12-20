@@ -1,10 +1,12 @@
 import { BadGatewayException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { number } from 'joi';
 import { User } from 'src/user/entity/user.entity';
 import { Repository } from 'typeorm';
 import { Channel } from './entity/channel.entity';
-import { InviteChannel } from './entity/invite-channel.entity';
+import {
+  InviteChannel,
+  InviteChannelStatus,
+} from './entity/invite-channel.entity';
 import { InviteCode } from './entity/invite-code.entity';
 
 @Injectable()
@@ -17,6 +19,25 @@ export class ChannelService {
     @InjectRepository(InviteChannel)
     private readonly inviteChannels: Repository<InviteChannel>,
   ) {}
+
+  isParticipants(userId: number, participants: User[]) {
+    for (let i = 0; i < participants.length; i++) {
+      if (participants[i].id === userId) {
+        return;
+      }
+    }
+    throw new BadGatewayException('채널 참가자가 아닙니다');
+  }
+
+  async getChannelInfo(user: User, channelId: number) {
+    const channel = await this.channels.findOne(
+      { id: channelId },
+      { relations: ['participants', 'master'] },
+    );
+    this.isParticipants(user.id, channel.participants);
+
+    return channel;
+  }
 
   async createChannel(user: User, name: string) {
     const channel = this.channels.create();
@@ -37,15 +58,7 @@ export class ChannelService {
       issueUserId: user.id,
     });
 
-    let isParticipants = false;
-    channel.participants.forEach((x) => {
-      if (x.id === user.id) {
-        isParticipants = true;
-      }
-    });
-    if (!isParticipants) {
-      throw new BadGatewayException('채널 참가자가 아닙니다');
-    }
+    this.isParticipants(user.id, channel.participants);
 
     if (_code) {
       const curDate = new Date();
@@ -94,5 +107,47 @@ export class ChannelService {
     invite.fromUser = user;
     invite.toUserId = toUserId;
     await this.inviteChannels.save(invite);
+  }
+
+  async joinChannel(inviteChannelId: number, user: User) {
+    const inviteChannel = await this.inviteChannels.findOne(
+      {
+        id: inviteChannelId,
+        toUser: user,
+      },
+      { relations: ['channel', 'channel.participants'] },
+    );
+
+    if (!inviteChannel.channel) {
+      throw new BadGatewayException('존재하지 않는 채널입니다.');
+    }
+
+    let isAlreadyJoin = false;
+    inviteChannel.channel.participants.forEach((x) => {
+      if (x.id == user.id) {
+        isAlreadyJoin = true;
+      }
+    });
+
+    if (!isAlreadyJoin) {
+      inviteChannel.channel.participants.push(user);
+      await this.channels.save(inviteChannel.channel);
+    }
+
+    inviteChannel.status = InviteChannelStatus.ACCEPTED;
+    await this.inviteChannels.save(inviteChannel);
+  }
+
+  async awayChannel(user: User, channelId: number) {
+    const ret = await this.channels
+      .createQueryBuilder()
+      .delete()
+      .from('channel_participants_user')
+      .where('channelId = :channelId', { channelId })
+      .andWhere('userId = :userId', { userId: user.id })
+      .execute();
+    if (!ret.affected) {
+      throw new BadGatewayException('채널 참가자가 아닙니다');
+    }
   }
 }

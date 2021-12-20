@@ -1,5 +1,12 @@
 import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
-import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany } from 'typeorm';
+import {
+  BeforeInsert,
+  BeforeUpdate,
+  Column,
+  Entity,
+  Index,
+  OneToMany,
+} from 'typeorm';
 
 import { hash, compare } from 'bcrypt';
 import { BaseComlum } from 'src/common/entity/base.entity';
@@ -22,6 +29,7 @@ registerEnumType(ActiveStatus, {
 @Entity()
 export class User extends BaseComlum {
   @Field(() => String)
+  @Index({ unique: true })
   @Column({ length: 50 })
   @IsEmail({}, { message: '이메일 형식이 아닙니다.' })
   email: string;

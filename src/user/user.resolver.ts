@@ -24,7 +24,7 @@ export class UserResolver {
   ) {}
 
   @Public()
-  @Mutation(() => SignUpResponse)
+  @Mutation(() => SignUpResponse, { description: '회원가입 - public' })
   async signUp(@Args() signUpData: SignUpDto): Promise<SignUpResponse> {
     if (!signUpData.email) {
       throw new BadRequestException('이메일이 필요합니다.');
@@ -40,7 +40,7 @@ export class UserResolver {
   }
 
   @Public()
-  @Query(() => BaseResponse)
+  @Query(() => BaseResponse, { description: '로그인 - public' })
   async login(
     @Context() context: any,
     @Args() loginData: LoginDto,
@@ -65,19 +65,21 @@ export class UserResolver {
     return { ok: true };
   }
 
-  @Query(() => BaseResponse)
+  @Query(() => BaseResponse, { description: '로그아웃 쿠키삭제' })
   async logout(@Context() context: any, @authUser() user: User) {
     await this.userService.updateUserActiveStatus(user.id, ActiveStatus.OFF);
     context.res.clearCookie('Authorization');
     return { ok: true };
   }
 
-  @Query(() => CurrentUserResponse)
+  @Query(() => CurrentUserResponse, { description: '로그인된 유저 정보' })
   async currentUser(@authUser() user: User): Promise<CurrentUserResponse> {
     return { ok: true, user };
   }
 
-  @Query(() => GetFriendRequestResponse)
+  @Query(() => GetFriendRequestResponse, {
+    description: '대기중인 친구요청 상태 조회',
+  })
   async getFriendRequestsFromRecipients(
     @authUser() user: User,
   ): Promise<GetFriendRequestResponse> {
@@ -87,7 +89,7 @@ export class UserResolver {
     return { ok: true, friendRequest: requests };
   }
 
-  @Query(() => GetFriendRequestResponse)
+  @Query(() => GetFriendRequestResponse, { description: '친구요청 상태조회' })
   async getFriendRequestsStatus(
     @authUser() user: User,
   ): Promise<GetFriendRequestResponse> {
@@ -95,7 +97,7 @@ export class UserResolver {
     return { ok: true, friendRequest: requests };
   }
 
-  @Mutation(() => BaseResponse)
+  @Mutation(() => BaseResponse, { description: '친구요청' })
   async sendFriendRequest(
     @authUser() user: User,
     @Args('recieverId') recieverId: number,
@@ -104,7 +106,7 @@ export class UserResolver {
     return { ok: true };
   }
 
-  @Mutation(() => BaseResponse)
+  @Mutation(() => BaseResponse, { description: '친구요청 수락 거부' })
   async responseFriendRequest(
     @Args('requestId') requestId: number,
     @Args('status', { type: () => FriendRequestStatus })
@@ -114,7 +116,7 @@ export class UserResolver {
     return { ok: true };
   }
 
-  @Query(() => GetFriendsResponse)
+  @Query(() => GetFriendsResponse, { description: '친구 목록 조회' })
   async getFriends(@authUser() user: User): Promise<GetFriendsResponse> {
     try {
       const friends = await this.userService.getFriends(user);
@@ -124,7 +126,7 @@ export class UserResolver {
     }
   }
 
-  @Query(() => FindUserResponse)
+  @Query(() => FindUserResponse, { description: '이름과 태그로 친구 검색' })
   async findUserByNameWithTag(
     @authUser() user: User,
     @Args('nameWithTag') nameWithTag: string,

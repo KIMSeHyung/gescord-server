@@ -1,7 +1,7 @@
 # gescord
 
 디스코드 클론 프로젝트 (BE)
-NestJs, Graphql, Mysql, Redis(PubSub)
+NestJs, Graphql, Mysql, MongoDB, Redis(PubSub)
 
 ## 회원가입
 
@@ -30,11 +30,14 @@ NestJs, Graphql, Mysql, Redis(PubSub)
 
 - 채널 생성[0]
 - 채널 참가[0]
-- 채널 검색
 - 채널 초대[0]
+- 채널 나가기[0]
 - 음성대화방 생성, 참가
-- 채팅
 - 참여 유저 상태
+
+## 채팅
+
+- MongoDB로 설계
 
 ## 음성대화방
 
@@ -44,3 +47,5 @@ NestJs, Graphql, Mysql, Redis(PubSub)
 ## 미디어 서버
 
 - Janus-gateway
+
+## CI/CD 구성

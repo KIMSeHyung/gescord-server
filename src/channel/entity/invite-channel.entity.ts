@@ -1,5 +1,4 @@
 import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
-import { IsDecimal } from 'class-validator';
 import { BaseComlum } from 'src/common/entity/base.entity';
 import { User } from 'src/user/entity/user.entity';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
