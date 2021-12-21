@@ -9,7 +9,7 @@ export enum ChannelChatType {
 }
 
 registerEnumType(ChannelChatType, {
-  name: 'ChatType',
+  name: 'ChannelChatType',
   description: '일반채팅 or 음성채팅',
 });
 

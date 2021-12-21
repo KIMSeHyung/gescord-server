@@ -15,7 +15,7 @@ export class ChatResolver {
     @authUser() user: User,
     @Args('channelId') channelId: number,
     @Args('name') name: string,
-    @Args('type') type: ChannelChatType,
+    @Args('type', { type: () => ChannelChatType }) type: ChannelChatType,
   ) {
     const room = await this.chatService.createChannelChatRoom(
       user,

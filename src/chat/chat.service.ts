@@ -1,8 +1,10 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { InjectRepository } from '@nestjs/typeorm';
+import { RedisPubSub } from 'graphql-redis-subscriptions';
 import { Model } from 'mongoose';
 import { Channel } from 'src/channel/entity/channel.entity';
+import { REDIS_PUB_SUB } from 'src/common/constants';
 import { User } from 'src/user/entity/user.entity';
 import { Repository } from 'typeorm';
 import { ChannelChatDto } from './dto/chat.dto';
@@ -22,6 +24,7 @@ export class ChatService {
     @InjectRepository(UserChatRoom)
     private userChatRooms: Repository<UserChatRoom>,
     @InjectModel(ChannelChat.name) private channeChats: Model<ChannelChat>,
+    @Inject(REDIS_PUB_SUB) private pubsub: RedisPubSub,
   ) {}
 
   async createChannelChatRoom(
@@ -74,5 +77,14 @@ export class ChatService {
       .select(['user', 'contents', 'createdAt'])
       .limit(20);
     return chat;
+  }
+
+  async testPublish(roomId: number, text: string) {
+    await this.pubsub.publish(`rooms-${roomId}`, text);
+    return 'text';
+  }
+
+  async testSubscription(roomId: number) {
+    return this.pubsub.asyncIterator(`rooms-${roomId}`);
   }
 }

@@ -9,6 +9,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Channel } from 'src/channel/entity/channel.entity';
 import { ChannelChatRoom } from './entity/channel-chat-room.entity';
 import { UserChatRoom } from './entity/user-chat-room.entity';
+import { ChatSubscriptionResolver } from './chat.subscription.resolver';
 
 @Module({
   imports: [
@@ -19,6 +20,6 @@ import { UserChatRoom } from './entity/user-chat-room.entity';
       { name: UserForMongo.name, schema: UserForMongoSchema },
     ]),
   ],
-  providers: [ChatService, ChatResolver],
+  providers: [ChatService, ChatResolver, ChatSubscriptionResolver],
 })
 export class ChatModule {}

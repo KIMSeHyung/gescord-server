@@ -50,6 +50,7 @@ export class ChannelResolver {
       data.channelId,
       user,
       data.toUserId,
+      data.roomId,
     );
     return { ok: true };
   }

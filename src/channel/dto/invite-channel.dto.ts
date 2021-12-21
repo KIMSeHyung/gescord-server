@@ -5,7 +5,7 @@ import { InviteChannel } from '../entity/invite-channel.entity';
 @ArgsType()
 export class InviteChannelDto extends PickType(
   InviteChannel,
-  ['channelId', 'toUserId'],
+  ['channelId', 'toUserId', 'roomId'],
   ArgsType,
 ) {}
 

@@ -100,11 +100,17 @@ export class ChannelService {
     return channel;
   }
 
-  async inviteChannelToFriend(channelId: number, user: User, toUserId: number) {
+  async inviteChannelToFriend(
+    channelId: number,
+    user: User,
+    toUserId: number,
+    roomId?: number,
+  ) {
     const invite = this.inviteChannels.create();
     invite.channelId = channelId;
     invite.fromUser = user;
     invite.toUserId = toUserId;
+    invite.roomId = roomId;
     await this.inviteChannels.save(invite);
   }
 

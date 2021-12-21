@@ -1,4 +1,5 @@
 import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
+import { ChannelChatType } from 'src/chat/entity/channel-chat-room.entity';
 import { BaseComlum } from 'src/common/entity/base.entity';
 import { User } from 'src/user/entity/user.entity';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
@@ -40,6 +41,14 @@ export class InviteChannel extends BaseComlum {
   @Field(() => Int)
   @Column()
   toUserId: number;
+
+  @Field(() => ChannelChatType)
+  @Column({ type: 'enum', enum: ChannelChatType })
+  chatType: ChannelChatType;
+
+  @Field(() => Int, { nullable: true })
+  @Column({ nullable: true })
+  roomId?: number;
 
   @Field(() => InviteChannelStatus)
   @Column({
