@@ -1,14 +1,13 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
-import { Request } from 'express';
 import { Strategy } from 'passport-jwt';
 import { User } from 'src/user/entity/user.entity';
 import { UserService } from 'src/user/user.service';
 import { JWT_SECRET } from './auth.constants';
 
 const fromAuthCookie = function () {
-  return function (req: Request) {
+  return function (req: any) {
     let token = null;
     if (req && req.cookies) {
       token = req.cookies['Authorization'];

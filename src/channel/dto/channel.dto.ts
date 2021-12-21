@@ -3,6 +3,12 @@ import { BaseResponse } from 'src/common/dto/base.dto';
 import { Channel } from '../entity/channel.entity';
 
 @ObjectType()
+export class getChannelInfoResponse extends BaseResponse {
+  @Field(() => Channel, { nullable: true })
+  channel?: Channel;
+}
+
+@ObjectType()
 export class JoinChannelResponse extends BaseResponse {
   @Field(() => Channel, { nullable: true })
   channel?: Channel;

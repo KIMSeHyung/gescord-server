@@ -3,7 +3,7 @@ import { BaseComlum } from 'src/common/entity/base.entity';
 import { BeforeInsert, Column, Entity } from 'typeorm';
 import * as randomString from 'randomstring';
 
-@ObjectType()
+@ObjectType({ description: '채널 초대 코드' })
 @Entity()
 export class InviteCode extends BaseComlum {
   @Field(() => String)

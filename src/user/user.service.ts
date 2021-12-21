@@ -1,5 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Model } from 'mongoose';
 import { generateRandomTag } from 'src/common/utils/generate-tag';
 import { Repository } from 'typeorm';
 import { SignUpDto } from './dto/user.dto';
@@ -8,6 +10,7 @@ import {
   FriendRequestStatus,
 } from './entity/friend-request.entity';
 import { ActiveStatus, User } from './entity/user.entity';
+import { UserDocument, UserForMongo } from './schema/user.schema';
 
 @Injectable()
 export class UserService {
@@ -15,6 +18,8 @@ export class UserService {
     @InjectRepository(User) private readonly users: Repository<User>,
     @InjectRepository(FriendRequest)
     private readonly friendRequest: Repository<FriendRequest>,
+    @InjectModel(UserForMongo.name)
+    private readonly userForMongos: Model<UserDocument>,
   ) {}
 
   async findById(userId: number): Promise<User> {
@@ -52,6 +57,13 @@ export class UserService {
     user.name = data.name;
     user.tag = tag;
     await this.users.save(user);
+
+    // mongo insert
+    await this.userForMongos.create({
+      userId: user.id,
+      email: user.email,
+      name: user.name,
+    });
     return user;
   }
 
