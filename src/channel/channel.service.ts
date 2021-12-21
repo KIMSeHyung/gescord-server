@@ -13,7 +13,6 @@ import { InviteCode } from './entity/invite-code.entity';
 export class ChannelService {
   constructor(
     @InjectRepository(Channel) private readonly channels: Repository<Channel>,
-    @InjectRepository(User) private readonly users: Repository<User>,
     @InjectRepository(InviteCode)
     private readonly inviteCodes: Repository<InviteCode>,
     @InjectRepository(InviteChannel)
@@ -32,7 +31,7 @@ export class ChannelService {
   async getChannelInfo(user: User, channelId: number) {
     const channel = await this.channels.findOne(
       { id: channelId },
-      { relations: ['participants', 'master'] },
+      { relations: ['participants', 'master', 'chatRoom'] },
     );
     this.isParticipants(user.id, channel.participants);
 

@@ -1,4 +1,4 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import { UserForMongo } from 'src/user/schema/user.schema';
@@ -8,16 +8,18 @@ export type ChannelChatDocument = ChannelChat & Document;
 @ObjectType()
 @Schema()
 export class ChannelChat {
+  @Field(() => Int)
   @Prop()
   channel: number;
 
+  @Field(() => Int)
   @Prop()
   room: number;
 
   @Field(() => UserForMongo)
   @Prop({
     type: Types.ObjectId,
-    ref: 'UserForMongo',
+    ref: UserForMongo.name,
   })
   user: UserForMongo;
 
@@ -28,7 +30,7 @@ export class ChannelChat {
   @Prop()
   contents: string;
 
-  @Field(() => Date)
+  @Field(() => Date, { nullable: true })
   @Prop({
     default: new Date(),
   })

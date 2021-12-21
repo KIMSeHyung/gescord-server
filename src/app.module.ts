@@ -23,6 +23,7 @@ import { VoiceModule } from './voice/voice.module';
         DB_USER_NAME: Joi.string().required(),
         DB_PASSWORD: Joi.string().required(),
         DB_NAME: Joi.string().required(),
+        MONGO_HOST: Joi.string().required(),
         JWT_SECRET: Joi.string().required(),
       }),
     }),
@@ -33,11 +34,11 @@ import { VoiceModule } from './voice/voice.module';
       username: process.env.DB_USER_NAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      logging: ['query'],
+      logging: false,
       synchronize: true,
       entities: ['dist/**/*.entity{.ts,.js}'],
     }),
-    MongooseModule.forRoot('mongodb://localhost:27017/gescord'),
+    MongooseModule.forRoot(process.env.MONGO_HOST),
     GraphQLModule.forRoot({
       autoSchemaFile: true,
       context: ({ req, conn }) => {

@@ -3,7 +3,7 @@ import { authUser } from 'src/auth/auth.decorator';
 import { BaseResponse } from 'src/common/dto/base.dto';
 import { User } from 'src/user/entity/user.entity';
 import { ChannelService } from './channel.service';
-import { JoinChannelResponse } from './dto/channel.dto';
+import { getChannelInfoResponse, JoinChannelResponse } from './dto/channel.dto';
 import {
   InviteChannelDto,
   InviteChannelResponse,
@@ -65,15 +65,13 @@ export class ChannelResolver {
     return { ok: true, channelId };
   }
 
-  @Query(() => BaseResponse, { description: '채널 정보' })
+  @Query(() => getChannelInfoResponse, { description: '채널 정보' })
   async getChannelInfo(
     @authUser() user: User,
     @Args('channelId') channelId: number,
-  ): Promise<BaseResponse> {
+  ): Promise<getChannelInfoResponse> {
     const channel = await this.channelService.getChannelInfo(user, channelId);
-    console.log(channel);
-
-    return { ok: true };
+    return { ok: true, channel };
   }
 
   @Mutation(() => BaseResponse, { description: '채널 나가기' })

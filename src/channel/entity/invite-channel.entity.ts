@@ -31,6 +31,7 @@ export class InviteChannel extends BaseComlum {
   @ManyToOne(() => User, (user) => user)
   fromUser: User;
 
+  // 객체말고 number로 찾으려 joincolumn 설정
   @Field(() => User)
   @ManyToOne(() => User, (user) => user)
   @JoinColumn({ name: 'toUserId' })

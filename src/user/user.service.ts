@@ -58,7 +58,12 @@ export class UserService {
     user.tag = tag;
     await this.users.save(user);
 
-    await this.userForMongos.create({ userId: user.id, email: user.email });
+    // mongo insert
+    await this.userForMongos.create({
+      userId: user.id,
+      email: user.email,
+      name: user.name,
+    });
     return user;
   }
 

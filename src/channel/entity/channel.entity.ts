@@ -1,5 +1,6 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { MaxLength, MinLength } from 'class-validator';
+import { ChannelChatRoom } from 'src/chat/entity/channel-chat-room.entity';
 import { BaseComlum } from 'src/common/entity/base.entity';
 import { User } from 'src/user/entity/user.entity';
 import {
@@ -30,7 +31,10 @@ export class Channel extends BaseComlum {
   @JoinTable()
   participants: User[];
 
-  @Field(() => [InviteChannel])
   @OneToMany(() => InviteChannel, (invite) => invite.channel)
   inviteChannel: InviteChannel[];
+
+  @Field(() => [ChannelChatRoom])
+  @OneToMany(() => ChannelChatRoom, (room) => room.channel, { cascade: true })
+  chatRoom: ChannelChatRoom[];
 }

@@ -34,9 +34,11 @@ NestJs, Graphql, Mysql, MongoDB, Redis(PubSub)
 - 채널 나가기[0]
 - 음성대화방 생성, 참가
 - 참여 유저 상태
+- 실시간 이벤트 처리
 
 ## 채팅
-
+- 채널안 채팅
+- 유저간 채팅
 - MongoDB로 설계
 
 ## 음성대화방
