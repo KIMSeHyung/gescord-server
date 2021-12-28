@@ -55,10 +55,12 @@ export class ChatService {
       room: data.room,
       user: user.id,
     });
+
+    await this.pubsub.publish(`channel-room-${data.room}`, chat);
     return chat;
   }
 
-  async getChat(user: User, channel: number, room: number) {
+  async getChat(user: User, channel: number, room: number, timestamp?: number) {
     const isParticipants = await this.channels
       .createQueryBuilder('c')
       .leftJoinAndSelect('c.participants', 'p', 'userId = :userId', {
@@ -69,22 +71,21 @@ export class ChatService {
     if (!isParticipants.participants) {
       throw new BadRequestException('채널 참가자가 아닙니다.');
     }
+
     const chat = await this.channeChats
       .find({
         channel,
         room,
       })
+      .where('createdAt')
+      .lt(timestamp ? timestamp : Date.now())
       .select(['user', 'contents', 'createdAt'])
-      .limit(20);
+      .sort({ createdAt: -1 })
+      .limit(15);
     return chat;
   }
 
-  async testPublish(roomId: number, text: string) {
-    await this.pubsub.publish(`rooms-${roomId}`, text);
-    return 'text';
-  }
-
-  async testSubscription(roomId: number) {
-    return this.pubsub.asyncIterator(`rooms-${roomId}`);
+  async channelChatSubscription(roomId: number) {
+    return this.pubsub.asyncIterator(`channel-room-${roomId}`);
   }
 }
