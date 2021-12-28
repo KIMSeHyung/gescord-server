@@ -1,12 +1,13 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Types } from 'mongoose';
-import { UserForMongo } from 'src/user/schema/user.schema';
+import { Document } from 'mongoose';
 
 export type ChannelChatDocument = ChannelChat & Document;
 
 @ObjectType()
-@Schema()
+@Schema({
+  timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' },
+})
 export class ChannelChat {
   @Field(() => Int)
   @Prop()
@@ -16,12 +17,9 @@ export class ChannelChat {
   @Prop()
   room: number;
 
-  @Field(() => UserForMongo)
-  @Prop({
-    type: Types.ObjectId,
-    ref: UserForMongo.name,
-  })
-  user: UserForMongo;
+  @Field(() => Int)
+  @Prop()
+  user: number;
 
   @Prop()
   type: string;
@@ -30,11 +28,8 @@ export class ChannelChat {
   @Prop()
   contents: string;
 
-  @Field(() => Date, { nullable: true })
-  @Prop({
-    default: new Date(),
-  })
-  createdAt: Date;
+  @Field(() => String, { nullable: true })
+  createdAt?: string;
 }
 
 export const ChannelChatSchema = SchemaFactory.createForClass(ChannelChat);
