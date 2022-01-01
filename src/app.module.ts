@@ -50,6 +50,10 @@ import { Context } from 'apollo-server-core';
     GraphQLModule.forRoot({
       autoSchemaFile: true,
       installSubscriptionHandlers: true,
+      cors: {
+        origin: 'http://localhost:3001',
+        credentials: true,
+      },
       subscriptions: {
         'subscriptions-transport-ws': {
           onConnect: (ctx: Context<any>) => {

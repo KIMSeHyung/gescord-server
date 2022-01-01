@@ -61,7 +61,7 @@ export class UserResolver {
       );
     }
     const token = await this.authService.login(user);
-    context.res.cookie('Authorization', token, { httpOnly: true });
+    context.res.cookie('Authorization', token);
     return { ok: true };
   }
 

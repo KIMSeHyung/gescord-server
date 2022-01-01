@@ -6,7 +6,7 @@ import { ChatService } from './chat.service';
 import {
   ChannelChatDto,
   CreateChannelChatRoomResponse,
-  GetChatResponse,
+  GetChannelChatResponse,
 } from './dto/chat.dto';
 import { ChannelChatType } from './entity/channel-chat-room.entity';
 
@@ -32,19 +32,24 @@ export class ChatResolver {
     return { ok: true, room };
   }
 
-  @Mutation(() => BaseResponse, { description: '채팅 인서트' })
-  async insertChat(@authUser() user: User, @Args() data: ChannelChatDto) {
-    await this.chatService.insertChat(user, data);
+  @Mutation(() => BaseResponse, { description: '채널 채팅 퍼블리시' })
+  async insertChannelChat(
+    @authUser() user: User,
+    @Args() data: ChannelChatDto,
+  ) {
+    await this.chatService.insertChannelChat(user, data);
     return { ok: true };
   }
 
-  @Query(() => GetChatResponse, { description: '채널 채팅 데이터 가져오기' })
-  async getChat(
+  @Query(() => GetChannelChatResponse, {
+    description: '채널 채팅 데이터 가져오기',
+  })
+  async getChannelChat(
     @authUser() user: User,
     @Args('channelId') channelId: number,
     @Args('roomId') roomId: number,
-  ): Promise<GetChatResponse> {
-    const chat = await this.chatService.getChat(user, channelId, roomId);
+  ): Promise<GetChannelChatResponse> {
+    const chat = await this.chatService.getChannelChat(user, channelId, roomId);
     return { ok: true, chat };
   }
 }

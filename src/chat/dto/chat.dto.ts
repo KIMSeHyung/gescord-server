@@ -13,7 +13,7 @@ export abstract class CreateChannelChatRoomResponse extends BaseResponse {
 }
 
 @ObjectType()
-export abstract class GetChatResponse extends BaseResponse {
+export abstract class GetChannelChatResponse extends BaseResponse {
   @Field(() => [ChannelChat], { nullable: true })
   chat?: ChannelChat[];
 }

@@ -48,7 +48,10 @@ export class ChatService {
     return chatRoom;
   }
 
-  async insertChat(user: User, data: ChannelChatDto): Promise<ChannelChat> {
+  async insertChannelChat(
+    user: User,
+    data: ChannelChatDto,
+  ): Promise<ChannelChat> {
     const chat = await this.channeChats.create({
       channel: data.channel,
       contents: data.contents,
@@ -60,7 +63,12 @@ export class ChatService {
     return chat;
   }
 
-  async getChat(user: User, channel: number, room: number, timestamp?: number) {
+  async getChannelChat(
+    user: User,
+    channel: number,
+    room: number,
+    timestamp?: number,
+  ) {
     const isParticipants = await this.channels
       .createQueryBuilder('c')
       .leftJoinAndSelect('c.participants', 'p', 'userId = :userId', {
