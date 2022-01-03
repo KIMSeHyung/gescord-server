@@ -177,6 +177,7 @@ export class UserService {
     const channels = await this.users
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.joinChannels', 'channel')
+      .leftJoinAndSelect('channel.master', 'master')
       .where({ id: user.id })
       .orderBy('channel.id', 'DESC')
       .getOne();
