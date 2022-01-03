@@ -1,4 +1,4 @@
-import { ArgsType, Field, ObjectType, PickType } from '@nestjs/graphql';
+import { ArgsType, Field, Int, ObjectType, PickType } from '@nestjs/graphql';
 import { MaxLength, MinLength } from 'class-validator';
 import { Channel } from 'src/channel/entity/channel.entity';
 import { BaseResponse } from 'src/common/dto/base.dto';
@@ -52,7 +52,7 @@ export class FindUserResponse extends BaseResponse {
 }
 
 @ObjectType()
-export class JoinChannel extends PickType(Channel, ['id', 'name']) {}
+export class JoinChannel extends PickType(Channel, ['id', 'name', 'master']) {}
 
 @ObjectType()
 export class GetJoinChannelsResponse extends BaseResponse {

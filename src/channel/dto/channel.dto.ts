@@ -17,6 +17,6 @@ export class getChannelInfoResponse extends BaseResponse {
 
 @ObjectType()
 export class JoinChannelResponse extends BaseResponse {
-  @Field(() => Channel, { nullable: true })
-  channel?: Channel;
+  @Field(() => JoinChannel, { nullable: true })
+  channel?: JoinChannel;
 }

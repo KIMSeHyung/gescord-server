@@ -1,4 +1,8 @@
-import { BadGatewayException, Injectable } from '@nestjs/common';
+import {
+  BadGatewayException,
+  BadRequestException,
+  Injectable,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/user/entity/user.entity';
 import { Repository } from 'typeorm';
@@ -80,6 +84,9 @@ export class ChannelService {
       select: ['channelId'],
       where: { code },
     });
+    if (!invite) {
+      throw new BadRequestException('존재하지 않는 코드입니다.');
+    }
     const channel = await this.channels.findOne(
       { id: invite.channelId },
       { relations: ['participants', 'master'] },
