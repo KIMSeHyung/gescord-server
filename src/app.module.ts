@@ -1,4 +1,4 @@
-import { Global, Module } from '@nestjs/common';
+import { CacheModule, Global, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
@@ -14,7 +14,8 @@ import { VoiceModule } from './voice/voice.module';
 import { REDIS_PUB_SUB } from './common/constants';
 import { RedisPubSub } from 'graphql-redis-subscriptions';
 
-import Redis from 'ioredis';
+import Redis, { RedisOptions } from 'ioredis';
+import * as redisStore from 'cache-manager-redis-store';
 import { Context } from 'apollo-server-core';
 
 @Global()
@@ -34,6 +35,12 @@ import { Context } from 'apollo-server-core';
         REDIS_PORT: Joi.string().required(),
         JWT_SECRET: Joi.string().required(),
       }),
+    }),
+    CacheModule.register<RedisOptions>({
+      store: redisStore,
+      host: process.env.REDIS_HOST,
+      port: +process.env.REDIS_PORT,
+      isGlobal: true,
     }),
     TypeOrmModule.forRoot({
       type: 'mysql',
