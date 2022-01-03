@@ -27,7 +27,7 @@ export class Channel extends BaseComlum {
   master: User;
 
   @Field(() => [User])
-  @ManyToMany(() => User, (user) => user, { cascade: true })
+  @ManyToMany(() => User, (user) => user.joinChannels, { cascade: true })
   @JoinTable()
   participants: User[];
 

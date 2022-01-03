@@ -8,6 +8,7 @@ import {
   FindUserResponse,
   GetFriendRequestResponse,
   GetFriendsResponse,
+  GetJoinChannelsResponse,
   LoginDto,
   SignUpDto,
   SignUpResponse,
@@ -135,5 +136,15 @@ export class UserResolver {
       nameWithTag,
     );
     return { ok: true, user: foundedUser };
+  }
+
+  @Query(() => GetJoinChannelsResponse, {
+    description: '참여하고 있는 채널 목록',
+  })
+  async getJoinChannels(
+    @authUser() user: User,
+  ): Promise<GetJoinChannelsResponse> {
+    const channels = await this.userService.getJoinChannels(user);
+    return { ok: true, channels };
   }
 }

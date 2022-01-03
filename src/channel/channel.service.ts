@@ -43,7 +43,7 @@ export class ChannelService {
     channel.name = name;
     channel.master = user;
     channel.participants = [user];
-    await this.channels.save(channel);
+    return await this.channels.save(channel);
   }
 
   async createInviteCode(user: User, channelId: number): Promise<string> {

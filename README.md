@@ -38,9 +38,9 @@ NestJs, Graphql, Mysql, MongoDB, Redis
 - 실시간 이벤트 처리
 
 ## 채팅
-- [x]채널안 채팅
+- [x] 채널안 채팅
 - 유저간 채팅
-- [x]MongoDB로 설계
+- [x] MongoDB로 설계
 
 ## 음성대화방
 
