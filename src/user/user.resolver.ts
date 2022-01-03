@@ -147,4 +147,13 @@ export class UserResolver {
     const channels = await this.userService.getJoinChannels(user);
     return { ok: true, channels };
   }
+
+  @Mutation(() => BaseResponse)
+  async updateUserActiveStatus(
+    @authUser() user,
+    @Args('status') status: ActiveStatus,
+  ) {
+    await this.userService.updateUserActiveStatus(user.id, status);
+    return { ok: true };
+  }
 }
