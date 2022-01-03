@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Model } from 'mongoose';
+import { Channel } from 'src/channel/entity/channel.entity';
 import { generateRandomTag } from 'src/common/utils/generate-tag';
 import { Repository } from 'typeorm';
 import { SignUpDto } from './dto/user.dto';
@@ -170,5 +171,15 @@ export class UserService {
 
   async updateUserActiveStatus(userId: number, status: ActiveStatus) {
     await this.users.update({ id: userId }, { isActive: status });
+  }
+
+  async getJoinChannels(user: User): Promise<Channel[]> {
+    const channels = await this.users
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.joinChannels', 'channel')
+      .where({ id: user.id })
+      .orderBy('channel.id', 'DESC')
+      .getOne();
+    return channels.joinChannels;
   }
 }

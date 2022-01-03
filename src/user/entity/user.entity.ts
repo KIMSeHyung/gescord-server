@@ -5,6 +5,7 @@ import {
   Column,
   Entity,
   Index,
+  ManyToMany,
   OneToMany,
 } from 'typeorm';
 
@@ -57,9 +58,13 @@ export class User extends BaseComlum {
   @OneToMany(() => FriendRequest, (f) => f.receiver)
   recivedFriendRequest: FriendRequest[];
 
-  @Field(() => Channel)
+  @Field(() => [Channel])
   @OneToMany(() => Channel, (channel) => channel.master)
   channel: Channel[];
+
+  @Field(() => [Channel])
+  @ManyToMany(() => Channel, (channel) => channel.participants)
+  joinChannels: Channel[];
 
   @Exclude()
   private hashPassword(password: string): Promise<string> {

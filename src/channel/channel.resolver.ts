@@ -1,9 +1,14 @@
+import { BadRequestException } from '@nestjs/common';
 import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
 import { authUser } from 'src/auth/auth.decorator';
 import { BaseResponse } from 'src/common/dto/base.dto';
 import { User } from 'src/user/entity/user.entity';
 import { ChannelService } from './channel.service';
-import { getChannelInfoResponse, JoinChannelResponse } from './dto/channel.dto';
+import {
+  CreateChannelResponse,
+  getChannelInfoResponse,
+  JoinChannelResponse,
+} from './dto/channel.dto';
 import {
   InviteChannelDto,
   InviteChannelResponse,
@@ -14,13 +19,16 @@ import { CreateInviteCodeResponse } from './dto/invite-code.dto';
 export class ChannelResolver {
   constructor(private channelService: ChannelService) {}
 
-  @Mutation(() => BaseResponse, { description: '채널 생성' })
+  @Mutation(() => CreateChannelResponse, { description: '채널 생성' })
   async createChannel(
     @authUser() user: User,
     @Args('channelName') name: string,
-  ): Promise<BaseResponse> {
-    await this.channelService.createChannel(user, name);
-    return { ok: true };
+  ): Promise<CreateChannelResponse> {
+    if (name.length === 0) {
+      throw new BadRequestException('채널 이름을 적어주세요');
+    }
+    const channel = await this.channelService.createChannel(user, name);
+    return { ok: true, channel };
   }
 
   @Mutation(() => CreateInviteCodeResponse, { description: '초대코드 생성' })

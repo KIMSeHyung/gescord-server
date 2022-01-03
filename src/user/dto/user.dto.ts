@@ -1,5 +1,6 @@
 import { ArgsType, Field, ObjectType, PickType } from '@nestjs/graphql';
 import { MaxLength, MinLength } from 'class-validator';
+import { Channel } from 'src/channel/entity/channel.entity';
 import { BaseResponse } from 'src/common/dto/base.dto';
 import { FriendRequest } from '../entity/friend-request.entity';
 import { User } from '../entity/user.entity';
@@ -48,4 +49,13 @@ export class GetFriendsResponse extends BaseResponse {
 export class FindUserResponse extends BaseResponse {
   @Field(() => User, { nullable: true })
   user?: User;
+}
+
+@ObjectType()
+export class JoinChannel extends PickType(Channel, ['id', 'name']) {}
+
+@ObjectType()
+export class GetJoinChannelsResponse extends BaseResponse {
+  @Field(() => [JoinChannel], { nullable: true })
+  channels?: JoinChannel[];
 }
