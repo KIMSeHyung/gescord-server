@@ -16,7 +16,7 @@ NestJs, Graphql, Mysql, MongoDB, Redis
 
 ## 유저
 
-- 유저 캐시 구현
+- [x] 유저 캐시 구현(redis)
 - [x] 닉네임 식별번호 추가 
 - [x] 유저 검색 
 - 프로필사진 업로드
