@@ -148,7 +148,7 @@ export class UserResolver {
     return { ok: true, channels };
   }
 
-  @Mutation(() => BaseResponse)
+  @Mutation(() => BaseResponse, { description: '사용자 로그인 상태 업데이트' })
   async updateUserActiveStatus(
     @authUser() user,
     @Args('status') status: ActiveStatus,
